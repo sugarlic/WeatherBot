@@ -14,7 +14,7 @@ func main() {
         log.Panic(err)
     }
 
-    bot.Debug = true
+    bot.Debug = false
 
     log.Printf("Authorized on account %s", bot.Self.UserName)
 
@@ -31,10 +31,10 @@ func main() {
         msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 
         switch update.Message.Text {
-        case "Hello":
+        case "/Hello":
             msg.Text = "Hello, I am test bot!"
         default:
-            msg.Text = "Hello, there is my options: \n1) /Hello"
+            msg.Text = "Hello, there is my options: \n/Hello\n/Broadcast"
         }
 
         if _, err := bot.Send(msg); err != nil {
