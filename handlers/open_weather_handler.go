@@ -34,13 +34,13 @@ func MakeRequestToOpWether(city string) {
 		return
 	}
 
-	for key, elem := range data {
-		log.Println(key, elem)
-	}
+	// for key, elem := range data {
+	// 	log.Println(key, elem)
+	// }
 
-	if main, ok := data["main"].([]interface{}); ok {
-		for _, elem := range main {
-			log.Println(elem)
+	if main, ok := data["main"].(map[string]interface{}); ok {
+		for key, elem := range main {
+			log.Println(key, elem)
 		}
 	}
 
@@ -68,5 +68,5 @@ func MakeRequestToOpWether(city string) {
 }
 
 func main() {
-	MakeRequestToOpWether("Petersburg")
+	MakeRequestToOpWether("Kazan")
 }
