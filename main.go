@@ -25,7 +25,6 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u)
 
-	var city string
 	waiting_city := false
 
 	for update := range updates {
@@ -48,8 +47,8 @@ func main() {
 		}
 
 		if waiting_city {
-			city = update.Message.Text
-			msg.Text, _ = handlers.MakeRequestToOpWether(city)
+			msg.Text, _ = handlers.MakeRequestToOpWether(update.Message.Text)
+			waiting_city = false
 		}
 
 		if _, err := bot.Send(msg); err != nil {
