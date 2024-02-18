@@ -6,6 +6,7 @@ import (
 
 	// "example.com/m/configs"
 
+	"example.com/m/handlers"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -24,6 +25,9 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u)
 
+	var city string
+	waiting_city := false
+
 	for update := range updates {
 		if update.Message == nil { // ignore non-Message updates
 			continue
@@ -32,10 +36,20 @@ func main() {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 
 		switch update.Message.Text {
-		case "/Hello":
-			msg.Text = "Hello, I am test bot!"
-		default:
-			msg.Text = "Hello, there is my options: \n/Hello\n/Broadcast"
+		case "/forecast":
+			msg.Text = "Please enter the city:"
+			if _, err := bot.Send(msg); err != nil {
+				log.Panic(err)
+			}
+			waiting_city = true
+			continue
+		case "/info":
+			msg.Text = "Hello, there is my options: \n/info\n/forecast"
+		}
+
+		if waiting_city {
+			city = update.Message.Text
+			msg.Text, _ = handlers.MakeRequestToOpWether(city)
 		}
 
 		if _, err := bot.Send(msg); err != nil {
