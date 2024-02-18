@@ -4,8 +4,7 @@ import (
 	"log"
 	"os"
 
-	// "example.com/m/configs"
-
+	"example.com/m/configs"
 	"example.com/m/handlers"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -32,11 +31,12 @@ func main() {
 			continue
 		}
 
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
 
 		switch update.Message.Text {
 		case "/forecast":
 			msg.Text = "Please enter the city:"
+			msg.ReplyMarkup = configs.NumericKeyboardCity
 			if _, err := bot.Send(msg); err != nil {
 				log.Panic(err)
 			}
@@ -44,11 +44,19 @@ func main() {
 			continue
 		case "/info":
 			msg.Text = "Hello, there is my options: \n/info\n/forecast"
+		case "/start":
+			msg.Text = "Hello, there is my options: \n/info\n/forecast"
 		}
 
 		if waiting_city {
-			msg.Text, _ = handlers.MakeRequestToOpWether(update.Message.Text)
+			reply, err := handlers.MakeRequestToOpWether(update.Message.Text)
+			if err == nil {
+				msg.Text = reply
+			} else {
+				msg.Text = err.Error()
+			}
 			waiting_city = false
+			msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 		}
 
 		if _, err := bot.Send(msg); err != nil {

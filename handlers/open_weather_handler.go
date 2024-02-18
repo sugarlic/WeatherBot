@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -37,6 +38,8 @@ func MakeRequestToOpWether(city string) (string, error) {
 		for key, elem := range main {
 			forecast[key] = elem
 		}
+	} else {
+		return "", errors.New("no current city")
 	}
 
 	if wind, ok := data["wind"].(map[string]interface{}); ok {
