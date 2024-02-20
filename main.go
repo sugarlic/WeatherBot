@@ -27,14 +27,18 @@ func main() {
 	waiting_city := false
 
 	for update := range updates {
-		if update.Message == nil { // ignore non-Message updates
+		def_reply := "Hello, there is my options: \n/info\n/forecast"
+
+		if update.Message == nil {
 			continue
 		}
 
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-		switch update.Message.Text {
-		case "/forecast":
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, def_reply)
+
+		switch update.Message.Command() {
+		case "forecast":
 			msg.Text = "Please enter the city:"
 			msg.ReplyMarkup = configs.NumericKeyboardCity
 			if _, err := bot.Send(msg); err != nil {
@@ -42,9 +46,7 @@ func main() {
 			}
 			waiting_city = true
 			continue
-		case "/info":
-			msg.Text = "Hello, there is my options: \n/info\n/forecast"
-		case "/start":
+		case "info":
 			msg.Text = "Hello, there is my options: \n/info\n/forecast"
 		}
 

@@ -9,5 +9,12 @@ var NumericKeyboardCity = tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButton("Kazan"),
 		tgbotapi.NewKeyboardButton("Moscow"),
 		tgbotapi.NewKeyboardButton("Petersburg"),
+		tgbotapi.NewKeyboardButton("Novgorod"),
+	),
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Samara"),
+		tgbotapi.NewKeyboardButton("Omsk"),
+		tgbotapi.NewKeyboardButton("Vladimir"),
+		tgbotapi.NewKeyboardButton("Ufa"),
 	),
 )
