@@ -25,9 +25,10 @@ func main() {
 	updates := bot.GetUpdatesChan(u)
 
 	waiting_city := false
+	waiting_coords := false
 
 	for update := range updates {
-		def_reply := "Hello, there is my options: \n/info\n/forecast"
+		def_reply := "Hello, there is my options: \n/info\n/forecast\n/forecast_by_coords"
 
 		if update.Message == nil {
 			continue
@@ -46,12 +47,19 @@ func main() {
 			}
 			waiting_city = true
 			continue
+		case "forecast_by_coords":
+			msg.Text = "Please enter the coords in format: \"lat lon\""
+			if _, err := bot.Send(msg); err != nil {
+				log.Panic(err)
+			}
+			waiting_coords = true
+			continue
 		case "info":
-			msg.Text = "Hello, there is my options: \n/info\n/forecast"
+			msg.Text = def_reply
 		}
 
 		if waiting_city {
-			reply, err := handlers.MakeRequestToOpWether(update.Message.Text)
+			reply, err := handlers.MakeRequestByCity(update.Message.Text)
 			if err == nil {
 				msg.Text = reply
 			} else {
@@ -59,6 +67,16 @@ func main() {
 			}
 			waiting_city = false
 			msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
+		}
+
+		if waiting_coords {
+			reply, err := handlers.MakeRequestByCoords(update.Message.Text)
+			if err == nil {
+				msg.Text = reply
+			} else {
+				msg.Text = err.Error()
+			}
+			waiting_coords = false
 		}
 
 		if _, err := bot.Send(msg); err != nil {
