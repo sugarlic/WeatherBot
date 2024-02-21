@@ -1,8 +1,12 @@
 package configs
 
 import (
+	"time"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
+
+var Start time.Time
 
 var NumericKeyboardCity = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(

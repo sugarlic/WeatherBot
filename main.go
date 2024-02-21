@@ -6,14 +6,21 @@ import (
 
 	"example.com/m/configs"
 	"example.com/m/handlers"
+	"example.com/m/utils"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func main() {
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
+
+	db, err := utils.InitDb()
+	if err != nil {
+		log.Fatal(err)
+	}
+	db.Ping()
 
 	bot.Debug = false
 
@@ -59,7 +66,7 @@ func main() {
 		}
 
 		if waiting_city {
-			reply, err := handlers.MakeRequestByCity(update.Message.Text)
+			reply, err := handlers.MakeRequestByCity(db, update.Message.Text)
 			if err == nil {
 				msg.Text = reply
 			} else {

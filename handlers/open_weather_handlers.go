@@ -1,21 +1,48 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
+	"time"
 
+	"example.com/m/configs"
 	"example.com/m/utils"
 )
 
 var appID string = "db7172c6a976b06502762e915d239656"
 
-func MakeRequestByCity(city string) (string, error) {
-	url := utils.MakeUrlForCity(city, appID)
-
-	forecast, err := MakeRequestToOpWether(url)
+func MakeRequestByCity(db *sql.DB, city string) (string, error) {
+	forecast := make(map[string]interface{})
+	city_exist, err := utils.CheckRowExists(db, city)
 	if err != nil {
 		return "", err
+	}
+	if city_exist {
+		log.Println("reading from db")
+		forecast, err = utils.ReadFromDb(db, city)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		configs.Start = time.Now()
+		url := utils.MakeUrlForCity(city, appID)
+		forecast, err = MakeRequestToOpWether(url)
+		if err != nil {
+			return "", err
+		}
+
+		err = utils.InsertIntoDb(db, forecast)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	if time.Since(configs.Start).Seconds() > 60 {
+		configs.Start = time.Now()
+		utils.DeleteFromDb(db, city)
 	}
 
 	return utils.MakeStrFromMap(forecast), nil
