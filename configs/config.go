@@ -6,6 +6,11 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+type WaitingStates struct {
+	Waiting_city   bool
+	Waiting_coords bool
+}
+
 var Start time.Time
 
 var NumericKeyboardCity = tgbotapi.NewReplyKeyboard(

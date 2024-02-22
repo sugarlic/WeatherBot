@@ -10,9 +10,29 @@ import (
 
 	"example.com/m/configs"
 	"example.com/m/utils"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 var appID string = "db7172c6a976b06502762e915d239656"
+
+func ReplyToCityForecast(db *sql.DB, update tgbotapi.Update, msg *tgbotapi.MessageConfig) {
+	reply, err := MakeRequestByCity(db, update.Message.Text)
+	if err == nil {
+		msg.Text = reply
+	} else {
+		msg.Text = err.Error()
+	}
+	msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
+}
+
+func ReplyToCoordsForecast(update tgbotapi.Update, msg *tgbotapi.MessageConfig) {
+	reply, err := MakeRequestByCoords(update.Message.Text)
+	if err == nil {
+		msg.Text = reply
+	} else {
+		msg.Text = err.Error()
+	}
+}
 
 func MakeRequestByCity(db *sql.DB, city string) (string, error) {
 	forecast := make(map[string]interface{})
