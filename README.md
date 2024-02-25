@@ -1,2 +1,2 @@
 # SimleTelegramBot_golang
-Simle telegram bot in Golang programming language
+Simple telegram bot in Golang programming language
