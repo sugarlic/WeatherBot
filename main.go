@@ -52,19 +52,24 @@ func main() {
 			msg.Text = "Please enter the city:"
 			msg.ReplyMarkup = configs.NumericKeyboardCity
 			if _, err := bot.Send(msg); err != nil {
-				log.Panic(err)
+				log.Fatal(err)
 			}
 			waiting_states.Waiting_city = true
 			continue
 		case "forecast_by_coords":
 			msg.Text = "Please enter the coords in format: \"lat lon\""
 			if _, err := bot.Send(msg); err != nil {
-				log.Panic(err)
+				log.Fatal(err)
 			}
 			waiting_states.Waiting_coords = true
 			continue
 		case "info":
-			msg.Text = def_reply
+			photo := tgbotapi.NewInputMediaPhoto(tgbotapi.FilePath("./images/tglogo.png"))
+			_, err = bot.SendMediaGroup(tgbotapi.NewMediaGroup(update.Message.Chat.ID,
+				[]interface{}{photo}))
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		if waiting_states.Waiting_city {
@@ -78,7 +83,7 @@ func main() {
 		}
 
 		if _, err := bot.Send(msg); err != nil {
-			log.Panic(err)
+			log.Fatal(err)
 		}
 	}
 }
